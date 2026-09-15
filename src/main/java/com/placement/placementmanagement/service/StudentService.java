@@ -42,8 +42,19 @@ import java.util.Optional;
                 student.setCgpa(updatedStudent.getCgpa());
 
                 return studentRepository.save(student);
+
+
             }
 
+
             return null;
+        }
+        public boolean deleteStudent(Long id) {
+            if (studentRepository.existsById(id)) {
+                studentRepository.deleteById(id);
+                return true;
+            }
+
+            return false;
         }
     }

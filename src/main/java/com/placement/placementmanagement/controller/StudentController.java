@@ -3,6 +3,7 @@ import com.placement.placementmanagement.service.StudentService;
 import com.placement.placementmanagement.entity.Student;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ public class StudentController {
     }
 
     @PostMapping("/api/students")
-    public Student createStudent(@RequestBody Student student) {
+    public Student createStudent(@RequestBody @Valid Student student) {
         return studentService.saveStudent(student);
     }
 

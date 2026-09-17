@@ -1,7 +1,10 @@
 package com.placement.placementmanagement.entity;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 @Entity
 @Table(name = "students")
 public class Student {
@@ -9,11 +12,18 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+@NotBlank
     private String name;
+    @Email
+    @NotBlank
     private String email;
+    @NotBlank
     private String phone;
+    @NotBlank
     private String branch;
+
+    @Min(0)
+    @Max(10)
     private Double cgpa;
 
     public Long getId() {

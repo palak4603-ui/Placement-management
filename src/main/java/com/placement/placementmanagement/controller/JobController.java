@@ -1,17 +1,16 @@
 package com.placement.placementmanagement.controller;
 
-
+import com.placement.placementmanagement.entity.Job;
+import com.placement.placementmanagement.service.JobService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.placement.placementmanagement.service.JobService;
-import com.placement.placementmanagement.entity.Job;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 public class JobController {
+
     private final JobService jobService;
 
     public JobController(JobService jobService) {
@@ -21,6 +20,12 @@ public class JobController {
     @PostMapping("/api/jobs")
     public Job createJob(@RequestBody Job job) {
         return jobService.saveJob(job);
+    }
+
+    @GetMapping("/api/jobs")
+    public ResponseEntity<List<Job>> getAllJobs() {
+        List<Job> jobs = jobService.getAllJobs();
+        return ResponseEntity.ok(jobs);
     }
 
     @GetMapping("/api/jobs/{id}")
@@ -34,6 +39,7 @@ public class JobController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PutMapping("/api/jobs/{id}")
     public ResponseEntity<Job> updateJob(
             @PathVariable Long id,
@@ -47,6 +53,7 @@ public class JobController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @DeleteMapping("/api/jobs/{id}")
     public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
 

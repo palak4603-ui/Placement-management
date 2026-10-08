@@ -40,6 +40,8 @@ import java.util.Optional;
                 student.setPhone(updatedStudent.getPhone());
                 student.setBranch(updatedStudent.getBranch());
                 student.setCgpa(updatedStudent.getCgpa());
+                student.setSkills(updatedStudent.getSkills());
+                student.setBacklogs(updatedStudent.getBacklogs());
 
                 return studentRepository.save(student);
 

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
+
 @Entity
 @Table(name = "students")
 public class Student {
@@ -12,19 +13,28 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-@NotBlank
+
+    @NotBlank
     private String name;
+
     @Email
     @NotBlank
     private String email;
+
     @NotBlank
     private String phone;
+
     @NotBlank
     private String branch;
 
     @Min(0)
     @Max(10)
     private Double cgpa;
+
+    private String skills;
+
+    @Min(0)
+    private Integer backlogs;
 
     public Long getId() {
         return id;
@@ -73,4 +83,21 @@ public class Student {
     public void setCgpa(Double cgpa) {
         this.cgpa = cgpa;
     }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public Integer getBacklogs() {
+        return backlogs;
+    }
+
+    public void setBacklogs(Integer backlogs) {
+        this.backlogs = backlogs;
+    }
+
 }

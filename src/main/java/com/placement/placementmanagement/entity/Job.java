@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "jobs")
 public class Job {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,6 +16,8 @@ public class Job {
     private String description;
     private String requiredSkills;
     private Double minimumCgpa;
+    private String eligibleBranches;
+    private Integer maximumBacklogs;
 
     public Long getId() {
         return id;
@@ -70,5 +73,20 @@ public class Job {
 
     public void setMinimumCgpa(Double minimumCgpa) {
         this.minimumCgpa = minimumCgpa;
+    }
+
+    public String getEligibleBranches() {
+        return eligibleBranches;
+    }
+
+    public void setEligibleBranches(String eligibleBranches) {
+        this.eligibleBranches = eligibleBranches;
+    }
+    public Integer getMaximumBacklogs() {
+        return maximumBacklogs;
+    }
+
+    public void setMaximumBacklogs(Integer maximumBacklogs) {
+        this.maximumBacklogs = maximumBacklogs;
     }
 }

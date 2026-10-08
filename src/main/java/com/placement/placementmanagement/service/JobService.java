@@ -40,6 +40,8 @@ public class JobService {
             job.setDescription(updatedJob.getDescription());
             job.setRequiredSkills(updatedJob.getRequiredSkills());
             job.setMinimumCgpa(updatedJob.getMinimumCgpa());
+            job.setEligibleBranches(updatedJob.getEligibleBranches());
+            job.setMaximumBacklogs(updatedJob.getMaximumBacklogs());
 
             return jobRepository.save(job);
         }

@@ -6,7 +6,10 @@ import com.placement.placementmanagement.entity.Student;
 import com.placement.placementmanagement.repository.ApplicationRepository;
 import com.placement.placementmanagement.repository.JobRepository;
 import com.placement.placementmanagement.repository.StudentRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.placement.placementmanagement.service.EligibiltyService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,14 +20,18 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final StudentRepository studentRepository;
     private final JobRepository jobRepository;
+    private final EligibiltyService eligibiltyService;
 
     public ApplicationService(ApplicationRepository applicationRepository,
                               StudentRepository studentRepository,
-                              JobRepository jobRepository) {
+                              JobRepository jobRepository,
+                              EligibiltyService eligibiltyService) {
         this.applicationRepository = applicationRepository;
         this.studentRepository = studentRepository;
         this.jobRepository = jobRepository;
+        this.eligibiltyService = eligibiltyService;
     }
+
 
     public Application applyForJob(Long studentId, Long jobId) {
 
@@ -34,8 +41,21 @@ public class ApplicationService {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
-        Application application = new Application();
+        if (applicationRepository.existsByStudentIdAndJobId(studentId, jobId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Student has already applied for this job"
+            );
+        }
 
+        if (!eligibiltyService.isEligible(student, job)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Student is not eligible for this job"
+            );
+        }
+
+        Application application = new Application();
         application.setStudent(student);
         application.setJob(job);
         application.setAppliedDate(LocalDate.now());
@@ -57,17 +77,33 @@ public class ApplicationService {
     public Application updateStatus(Long applicationId, String status) {
 
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Application not found"
+                ));
+
+        if (!status.equals("APPLIED")
+                && !status.equals("SHORTLISTED")
+                && !status.equals("REJECTED")
+                && !status.equals("SELECTED")) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid application status"
+            );
+        }
 
         application.setStatus(status);
 
         return applicationRepository.save(application);
     }
-
     public void deleteApplication(Long applicationId) {
 
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Application not found"
+                ));
 
         applicationRepository.delete(application);
     }

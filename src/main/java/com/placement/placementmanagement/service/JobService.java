@@ -31,12 +31,63 @@ public class JobService {
                 );
     }
 
+
     public List<Job> filterJobsByEligibility(Double cgpa, String branch) {
-        return jobRepository
-                .findByMinimumCgpaLessThanEqualAndEligibleBranchesContaining(
-                        cgpa, branch
-                );
+
+        if (cgpa == null || cgpa < 0 || cgpa > 10) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "CGPA must be between 0 and 10"
+            );
+        }
+
+        if (branch == null || branch.trim().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Branch must not be empty"
+            );
+        }
+
+        return jobRepository.filterEligibleJobs(
+                cgpa,
+                branch.trim()
+        );
     }
+
+    public List<Job> searchAndFilterJobs(
+            String keyword,
+            Double cgpa,
+            String branch) {
+
+        if (cgpa == null || cgpa < 0 || cgpa > 10) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "CGPA must be between 0 and 10"
+            );
+        }
+
+        if (branch == null || branch.trim().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Branch must not be empty"
+            );
+        }
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST,
+                    "Keyword must not be empty"
+            );
+        }
+
+        return jobRepository.searchAndFilterJobs(
+                keyword.trim(),
+                cgpa,
+                branch.trim()
+        );
+    }
+
+
 
 
     public Optional<Job> getJobById(Long id) {

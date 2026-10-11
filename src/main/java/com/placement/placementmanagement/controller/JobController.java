@@ -48,6 +48,17 @@ public class JobController {
         );
     }
 
+    @GetMapping("/api/jobs/search/filter")
+    public ResponseEntity<List<Job>> searchAndFilterJobs(
+            @RequestParam String keyword,
+            @RequestParam Double cgpa,
+            @RequestParam String branch) {
+
+        return ResponseEntity.ok(
+                jobService.searchAndFilterJobs(keyword, cgpa, branch)
+        );
+    }
+
 
     @GetMapping("/api/jobs/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable Long id) {

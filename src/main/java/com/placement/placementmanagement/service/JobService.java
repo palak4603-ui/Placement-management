@@ -23,6 +23,22 @@ public class JobService {
     public List<Job> getAllJobs() {
         return jobRepository.findAll();
     }
+
+    public List<Job> searchJobs(String keyword) {
+        return jobRepository
+                .findByTitleContainingIgnoreCaseOrCompanyContainingIgnoreCase(
+                        keyword, keyword
+                );
+    }
+
+    public List<Job> filterJobsByEligibility(Double cgpa, String branch) {
+        return jobRepository
+                .findByMinimumCgpaLessThanEqualAndEligibleBranchesContaining(
+                        cgpa, branch
+                );
+    }
+
+
     public Optional<Job> getJobById(Long id) {
         return jobRepository.findById(id);
     }

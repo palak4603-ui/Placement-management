@@ -1,3 +1,4 @@
+
 package com.placement.placementmanagement.controller;
 
 import com.placement.placementmanagement.entity.Job;
@@ -28,9 +29,28 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
+    @GetMapping("/api/jobs/search")
+    public ResponseEntity<List<Job>> searchJobs(
+            @RequestParam String keyword) {
+
+        return ResponseEntity.ok(
+                jobService.searchJobs(keyword)
+        );
+    }
+
+    @GetMapping("/api/jobs/filter")
+    public ResponseEntity<List<Job>> filterJobsByEligibility(
+            @RequestParam Double cgpa,
+            @RequestParam String branch) {
+
+        return ResponseEntity.ok(
+                jobService.filterJobsByEligibility(cgpa, branch)
+        );
+    }
+
+
     @GetMapping("/api/jobs/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable Long id) {
-
         Optional<Job> job = jobService.getJobById(id);
 
         if (job.isPresent()) {
@@ -56,9 +76,7 @@ public class JobController {
 
     @DeleteMapping("/api/jobs/{id}")
     public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-
         jobService.deleteJob(id);
-
         return ResponseEntity.noContent().build();
     }
 }

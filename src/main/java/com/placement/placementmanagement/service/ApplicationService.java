@@ -64,6 +64,14 @@ public class ApplicationService {
         return applicationRepository.save(application);
     }
 
+    public Application getApplicationById(Long applicationId) {
+        return applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Application not found"
+                ));
+    }
+
     public List<Application> getApplicationsByStudent(Long studentId) {
 
         return applicationRepository.findByStudentId(studentId);
@@ -74,6 +82,7 @@ public class ApplicationService {
         return applicationRepository.findByJobId(jobId);
     }
 
+
     public Application updateStatus(Long applicationId, String status) {
 
         Application application = applicationRepository.findById(applicationId)
@@ -82,14 +91,27 @@ public class ApplicationService {
                         "Application not found"
                 ));
 
-        if (!status.equals("APPLIED")
+        if (status == null
+                || (!status.equals("APPLIED")
                 && !status.equals("SHORTLISTED")
                 && !status.equals("REJECTED")
-                && !status.equals("SELECTED")) {
+                && !status.equals("SELECTED"))) {
 
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Invalid application status"
+            );
+        }
+
+        String currentStatus = application.getStatus();
+
+        if (currentStatus.equals("REJECTED")
+                || currentStatus.equals("SELECTED")) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cannot update an application that is already "
+                            + currentStatus
             );
         }
 

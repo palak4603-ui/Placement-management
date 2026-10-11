@@ -28,6 +28,16 @@ public class ApplicationController {
         return ResponseEntity.ok(application);
     }
 
+
+    @GetMapping("/{applicationId}")
+    public ResponseEntity<Application> getApplicationById(
+            @PathVariable Long applicationId) {
+
+        return ResponseEntity.ok(
+                applicationService.getApplicationById(applicationId)
+        );
+    }
+
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<Application>> getApplicationsByStudent(
             @PathVariable Long studentId) {

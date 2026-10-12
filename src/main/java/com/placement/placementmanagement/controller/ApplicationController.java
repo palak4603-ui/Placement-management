@@ -1,7 +1,10 @@
 package com.placement.placementmanagement.controller;
 
+import com.placement.placementmanagement.dto.ApplicationResponse;
 import com.placement.placementmanagement.entity.Application;
+import com.placement.placementmanagement.entity.ApplicationStatus;
 import com.placement.placementmanagement.service.ApplicationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,60 +21,69 @@ public class ApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<Application> applyForJob(
+    public ResponseEntity<ApplicationResponse> applyForJob(
             @RequestParam Long studentId,
             @RequestParam Long jobId) {
 
         Application application =
                 applicationService.applyForJob(studentId, jobId);
 
-        return ResponseEntity.ok(application);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApplicationResponse.from(application));
     }
 
-
     @GetMapping("/{applicationId}")
-    public ResponseEntity<Application> getApplicationById(
+    public ResponseEntity<ApplicationResponse> getApplicationById(
             @PathVariable Long applicationId) {
 
         return ResponseEntity.ok(
-                applicationService.getApplicationById(applicationId)
+                ApplicationResponse.from(
+                        applicationService.getApplicationById(applicationId))
         );
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<Application>> getApplicationsByStudent(
+    public ResponseEntity<List<ApplicationResponse>> getApplicationsByStudent(
             @PathVariable Long studentId) {
 
         return ResponseEntity.ok(
                 applicationService.getApplicationsByStudent(studentId)
+                        .stream()
+                        .map(ApplicationResponse::from)
+                        .toList()
         );
     }
 
     @GetMapping("/job/{jobId}")
-    public ResponseEntity<List<Application>> getApplicationsByJob(
+    public ResponseEntity<List<ApplicationResponse>> getApplicationsByJob(
             @PathVariable Long jobId) {
 
         return ResponseEntity.ok(
                 applicationService.getApplicationsByJob(jobId)
+                        .stream()
+                        .map(ApplicationResponse::from)
+                        .toList()
         );
     }
 
     @PutMapping("/{applicationId}/status")
-    public ResponseEntity<Application> updateStatus(
+    public ResponseEntity<ApplicationResponse> updateStatus(
             @PathVariable Long applicationId,
-            @RequestParam String status) {
+            @RequestParam ApplicationStatus status) {
 
         return ResponseEntity.ok(
-                applicationService.updateStatus(applicationId, status)
+                ApplicationResponse.from(
+                        applicationService.updateStatus(applicationId, status))
         );
     }
 
     @DeleteMapping("/{applicationId}")
-    public ResponseEntity<String> deleteApplication(
+    public ResponseEntity<Void> deleteApplication(
             @PathVariable Long applicationId) {
 
         applicationService.deleteApplication(applicationId);
 
-        return ResponseEntity.ok("Application deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 }

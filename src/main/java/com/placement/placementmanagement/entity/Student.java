@@ -1,10 +1,11 @@
 package com.placement.placementmanagement.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "students")
@@ -19,6 +20,7 @@ public class Student {
 
     @Email
     @NotBlank
+    @Column(unique = true, nullable = false)
     private String email;
 
     @NotBlank
@@ -27,12 +29,14 @@ public class Student {
     @NotBlank
     private String branch;
 
+    @NotNull
     @Min(0)
     @Max(10)
     private Double cgpa;
 
     private String skills;
 
+    @NotNull
     @Min(0)
     private Integer backlogs;
 

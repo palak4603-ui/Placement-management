@@ -1,6 +1,10 @@
 package com.placement.placementmanagement.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "jobs")
@@ -10,13 +14,29 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String title;
+
+    @NotBlank
     private String company;
+
     private String location;
+
     private String description;
+
+    @NotBlank
     private String requiredSkills;
+
+    @NotNull
+    @Min(0)
+    @Max(10)
     private Double minimumCgpa;
+
+    @NotBlank
     private String eligibleBranches;
+
+    @NotNull
+    @Min(0)
     private Integer maximumBacklogs;
 
     public Long getId() {
@@ -82,6 +102,7 @@ public class Job {
     public void setEligibleBranches(String eligibleBranches) {
         this.eligibleBranches = eligibleBranches;
     }
+
     public Integer getMaximumBacklogs() {
         return maximumBacklogs;
     }

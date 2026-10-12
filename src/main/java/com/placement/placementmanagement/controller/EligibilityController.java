@@ -3,7 +3,7 @@ package com.placement.placementmanagement.controller;
 import com.placement.placementmanagement.dto.EligibilityResponse;
 import com.placement.placementmanagement.entity.Job;
 import com.placement.placementmanagement.entity.Student;
-import com.placement.placementmanagement.service.EligibiltyService;
+import com.placement.placementmanagement.service.EligibilityService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EligibilityController {
 
-    private final EligibiltyService eligibilityService;
+    private final EligibilityService eligibilityService;
 
-    public EligibilityController(EligibiltyService eligibilityService) {
+    public EligibilityController(EligibilityService eligibilityService) {
         this.eligibilityService = eligibilityService;
     }
     @GetMapping("/api/eligibility/student/{studentId}/job/{jobId}")

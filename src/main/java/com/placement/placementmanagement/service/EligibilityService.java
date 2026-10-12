@@ -1,23 +1,24 @@
-
 package com.placement.placementmanagement.service;
 
 import com.placement.placementmanagement.entity.Job;
 import com.placement.placementmanagement.entity.Student;
 import com.placement.placementmanagement.repository.JobRepository;
 import com.placement.placementmanagement.repository.StudentRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class EligibiltyService {
+public class EligibilityService {
 
     private final StudentRepository studentRepository;
     private final JobRepository jobRepository;
 
-    public EligibiltyService(
+    public EligibilityService(
             StudentRepository studentRepository,
             JobRepository jobRepository) {
         this.studentRepository = studentRepository;
@@ -25,6 +26,9 @@ public class EligibiltyService {
     }
 
     public boolean checkCgpa(Student student, Job job) {
+        if (student.getCgpa() == null || job.getMinimumCgpa() == null) {
+            return false;
+        }
         return student.getCgpa() >= job.getMinimumCgpa();
     }
 
@@ -66,6 +70,9 @@ public class EligibiltyService {
     }
 
     public boolean checkBacklogs(Student student, Job job) {
+        if (student.getBacklogs() == null || job.getMaximumBacklogs() == null) {
+            return false;
+        }
         return student.getBacklogs() <= job.getMaximumBacklogs();
     }
 
@@ -78,13 +85,15 @@ public class EligibiltyService {
 
     public Student getStudent(Long studentId) {
         return studentRepository.findById(studentId)
-                .orElseThrow(() ->
-                        new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Student not found"));
     }
 
     public Job getJob(Long jobId) {
         return jobRepository.findById(jobId)
-                .orElseThrow(() ->
-                        new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Job not found"));
     }
 }

@@ -29,7 +29,8 @@ public class Application {
 
     private LocalDate appliedDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ApplicationStatus status;
 
     public Application() {
     }
@@ -66,11 +67,11 @@ public class Application {
         this.appliedDate = appliedDate;
     }
 
-    public String getStatus() {
+    public ApplicationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 }

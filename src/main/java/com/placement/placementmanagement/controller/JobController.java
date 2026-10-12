@@ -1,8 +1,9 @@
-
 package com.placement.placementmanagement.controller;
 
 import com.placement.placementmanagement.entity.Job;
 import com.placement.placementmanagement.service.JobService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,13 @@ public class JobController {
     }
 
     @PostMapping("/api/jobs")
-    public Job createJob(@RequestBody Job job) {
-        return jobService.saveJob(job);
+    public ResponseEntity<Job> createJob(@RequestBody @Valid Job job) {
+
+        Job saved = jobService.saveJob(job);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(saved);
     }
 
     @GetMapping("/api/jobs")
@@ -59,7 +65,6 @@ public class JobController {
         );
     }
 
-
     @GetMapping("/api/jobs/{id}")
     public ResponseEntity<Job> getJobById(@PathVariable Long id) {
         Optional<Job> job = jobService.getJobById(id);
@@ -74,7 +79,7 @@ public class JobController {
     @PutMapping("/api/jobs/{id}")
     public ResponseEntity<Job> updateJob(
             @PathVariable Long id,
-            @RequestBody Job updatedJob) {
+            @RequestBody @Valid Job updatedJob) {
 
         Job job = jobService.updateJob(id, updatedJob);
 
@@ -87,7 +92,13 @@ public class JobController {
 
     @DeleteMapping("/api/jobs/{id}")
     public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-        jobService.deleteJob(id);
-        return ResponseEntity.noContent().build();
+
+        boolean deleted = jobService.deleteJob(id);
+
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

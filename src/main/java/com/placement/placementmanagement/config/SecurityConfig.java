@@ -1,3 +1,4 @@
+
 package com.placement.placementmanagement.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,39 +26,57 @@ public class SecurityConfig {
             throws Exception {
 
         http
-                // Stateless REST API using HTTP Basic: no cookies, so no CSRF
+                // Stateless REST API using HTTP Basic
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public
+                        // Public endpoint
                         .requestMatchers("/api/hello").permitAll()
 
-                        // Jobs: everyone logged in can read, only ADMIN can change
+                        // Jobs: authenticated users can read;
+                        // only ADMIN can create, update, or delete
                         .requestMatchers(HttpMethod.GET, "/api/jobs/**")
                         .hasAnyRole("ADMIN", "STUDENT")
-                        .requestMatchers("/api/jobs/**").hasRole("ADMIN")
-
-                        // Students: personal data, ADMIN only
-                        .requestMatchers("/api/students/**").hasRole("ADMIN")
-
-                        // Applications
-                        // Listing everyone who applied to a job is ADMIN only
-                        // (must come BEFORE the general GET rule below)
-                        .requestMatchers(HttpMethod.GET, "/api/applications/job/**")
+                        .requestMatchers("/api/jobs/**")
                         .hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/applications")
-                        .hasAnyRole("ADMIN", "STUDENT")
-                        .requestMatchers(HttpMethod.GET, "/api/applications/**")
-                        .hasAnyRole("ADMIN", "STUDENT")
-                        .requestMatchers("/api/applications/**").hasRole("ADMIN")
 
-                        // Eligibility check
+                        // Student records: ADMIN only
+                        .requestMatchers("/api/students/**")
+                        .hasRole("ADMIN")
+
+                        // Only ADMIN can see all applicants for a job
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/applications/job/**")
+                        .hasRole("ADMIN")
+
+                        // Students can apply; controller determines
+                        // their student ID
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/applications")
+                        .hasAnyRole("ADMIN", "STUDENT")
+
+                        // ADMIN and STUDENT can read application endpoints;
+                        // controller verifies student ownership
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/applications/**")
+                        .hasAnyRole("ADMIN", "STUDENT")
+
+                        // Status updates, deletions, and all other
+                        // application operations are ADMIN only
+                        .requestMatchers("/api/applications/**")
+                        .hasRole("ADMIN")
+
+                        // Eligibility checks
                         .requestMatchers("/api/eligibility/**")
                         .hasAnyRole("ADMIN", "STUDENT")
 
-                        // Anything else must at least be logged in
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
@@ -70,13 +89,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Passwords come from application.properties (which is gitignored),
-    // so they are never committed to GitHub.
+    // Passwords are loaded from application.properties
     @Bean
     public UserDetailsService userDetailsService(
             PasswordEncoder encoder,
-            @Value("${app.security.admin-password}") String adminPassword,
-            @Value("${app.security.student-password}") String studentPassword) {
+            @Value("${app.security.admin-password}")
+            String adminPassword,
+            @Value("${app.security.student-password}")
+            String studentPassword) {
 
         UserDetails admin = User.withUsername("admin")
                 .password(encoder.encode(adminPassword))
